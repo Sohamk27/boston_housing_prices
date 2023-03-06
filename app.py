@@ -2,6 +2,7 @@ import pickle
 from flask import Flask, request, jsonify, render_template, url_for, app
 import numpy as np
 import pandas as pd
+import sklearn
 
 app = Flask(__name__) # __name__ is the starting point of the application
 
@@ -22,6 +23,14 @@ def predict_api():
     prediction = model.predict(new_data)
     print(prediction[0])
     return jsonify(prediction[0])
+
+@app.route('/predict', methods=['POST'])
+def predict():
+    data=[float(x) for x in request.form.values()]
+    final_input = scalar.transform(np.array(data).reshape(1, -1))
+    prediction = model.predict(final_input)
+    output = prediction[0]
+    return render_template("home.html", prediction_text='The predicted price of the house is {}'.format(output))
 
 if __name__ == "__main__":
     app.run(debug=True)
